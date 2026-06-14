@@ -1,5 +1,5 @@
 {lib, ... }: {
-  program.alacritty = {
+  programs.alacritty = {
     enable = true;
   };
 }

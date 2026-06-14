@@ -42,7 +42,8 @@
   };
 
   programs.niri.enable = true;
-    
+  programs.niri.enable = true;
+      
   # Packages
   environment.systemPackages = with pkgs; [
     helix

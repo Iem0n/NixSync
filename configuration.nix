@@ -5,6 +5,7 @@
     [ 
       ./hardware-configuration.nix
     ];
+
   # loader
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
@@ -42,7 +43,7 @@
   };
 
   programs.niri.enable = true;
-  programs.niri.enable = true;
+  programs.firefox.enable = true;
       
   # Packages
   environment.systemPackages = with pkgs; [

@@ -20,7 +20,7 @@
 					home-manager = {
 						useGlobalPkgs = true;
 						useUserPackages = true;
-						users.vova = import ./home.nix;
+						users.vova = import ./home-manager/home.nix;
 						backupFileExtension = "backup";
 					};
 				}

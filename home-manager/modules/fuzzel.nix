@@ -1,0 +1,32 @@
+{
+  programs.fuzzel = {
+    enable = true;
+
+    settings = {
+      main = {
+        font = "JetBrainsMono Nerd Font:size=14";
+        width = 40;
+        tabs = 4;
+        horizontal-pad = 20;
+        vertical-pad = 15;
+        inner-pad = 10;
+        anchor = "center";
+        lines = 10;
+      };
+
+      colors = {
+        background = "1d1f21dd";
+        text = "e0e0e0ff";
+        match = "ffffffff";
+        selection = "282a2eff";
+        selection-text = "e0e0e0ff";
+        border = "333333ff";
+      };
+
+      border = {
+        width = 2;
+        radius = 10;
+      };
+    };
+  };
+}

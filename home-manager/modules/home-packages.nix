@@ -11,6 +11,6 @@
     libnotify
     spotify
     zenity
-    atlauncher
+    (atlauncher.override { jre = openjdk17; })
   ];
 }

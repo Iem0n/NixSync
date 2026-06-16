@@ -44,8 +44,8 @@
 
     spawn-sh-at-startup "waybar"
     spawn-sh-at-startup "mako"
-    spawn-at-startup "xwayland" "-nocursor"
-
+    spawn-at-startup "Xwayland :1 -ac"
+    
     hotkey-overlay { skip-at-startup; }
 
     screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"

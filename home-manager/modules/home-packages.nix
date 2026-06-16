@@ -11,6 +11,6 @@
     libnotify
     spotify
     zenity
-    legacy-launcher
+    tlauncher-legacy
   ];
 }

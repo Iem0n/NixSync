@@ -20,35 +20,47 @@ let
   '';
 
   fuzzel-wifi = pkgs.writeScriptBin "fuzzel-wifi.sh" ''
-    #!usr/bin/env bash
-    wifi_list=$(${pkgs.networkmanager}/bin/nmcli --fields IN-USE,SSID,SECURITY device wifi list | sed 's/^IN-USE\s*//' | grep -v "SSID")
-    selected_node=$(echo "$wifi_list" | ${pkgs.fuzzel}/bin/fuzzel --dmenu -i -p "󰖩 Сети:")
-    if [ -z "$selected_node" ]; then
+    #!${pkgs.runtimeShell}
+    
+    # Получаем список сетей с разделителем ':' чтобы не ломать имена с пробелами
+    wifi_list=''$( ${pkgs.networkmanager}/bin/nmcli --terse --fields IN-USE,SSID,SECURITY device wifi list | grep -v "^*:" | sed 's/^://' )
+    
+    # Выводим красивый список в fuzzel (меняем двоеточия на пробелы для человеческого вида)
+    selected_node=''$(echo "''$wifi_list" | sed 's/:/  │  /g' | ${pkgs.fuzzel}/bin/fuzzel --dmenu -i -p "󰖩 Сети:")
+    
+    if [ -z "''$selected_node" ]; then
         exit 0
     fi
-    ssid=$(echo "$selected_node" | awk '{print $1}')
-    is_saved=$(${pkgs.networkmanager}/bin/nmcli connection show | grep -w "$ssid")
-    if [ ! -z "$is_saved" ]; then
-        ${pkgs.libnotify}/bin/notify-send "Wi-Fi" "Подключение к сохраненной сети $ssid..."
-        ${pkgs.networkmanager}/bin/nmcli connection up id "$ssid"
+
+    # Вытаскиваем чистый SSID (все до первого разделителя '  │  ')
+    ssid=''$(echo "''$selected_node" | awk -F '  │  ' '{print ''$1}' | sed 's/[[:space:]]*$//')
+
+    # Проверяем, есть ли уже сохраненное соединение
+    is_saved=''$( ${pkgs.networkmanager}/bin/nmcli connection show | grep -w "''$ssid" )
+
+    if [ ! -z "''$is_saved" ]; then
+        ${pkgs.libnotify}/bin/notify-send "Wi-Fi" "Подключение к сохраненной сети ''$ssid..."
+        ${pkgs.networkmanager}/bin/nmcli connection up id "''$ssid"
     else
-        if [[ "$selected_node" == *"WPA"* || "$selected_node" == *"WEP"* ]]; then
-            pass=$(${pkgs.fuzzel}/bin/fuzzel --dmenu --password -p "Пароль для $ssid:")
-            if [ ! -z "$pass" ]; then
-                ${pkgs.libnotify}/bin/notify-send "Wi-Fi" "Подключение к новой сети $ssid..."
-                ${pkgs.networkmanager}/bin/nmcli device wifi connect "$ssid" password "$pass"
+        # Проверяем, защищена ли сеть (ищем упоминание WPA или WEP в исходной строке из wifi_list)
+        raw_info=''$(echo "''$wifi_list" | grep "''$ssid")
+        if [[ "''$raw_info" == *"WPA"* || "''$raw_info" == *"WEP"* ]]; then
+            pass=''$( ${pkgs.fuzzel}/bin/fuzzel --dmenu --password -p "Пароль для ''$ssid:" )
+            if [ ! -z "''$pass" ]; then
+                ${pkgs.libnotify}/bin/notify-send "Wi-Fi" "Подключение к новой сети ''$ssid..."
+                ${pkgs.networkmanager}/bin/nmcli device wifi connect "''$ssid" password "''$pass"
             fi
         else
-            ${pkgs.libnotify}/bin/notify-send "Wi-Fi" "Подключение к открытой сети $ssid..."
-            ${pkgs.networkmanager}/bin/nmcli device wifi connect "$ssid"
+            ${pkgs.libnotify}/bin/notify-send "Wi-Fi" "Подключение к открытой сети ''$ssid..."
+            ${pkgs.networkmanager}/bin/nmcli device wifi connect "''$ssid"
         fi
     fi
   '';
+
 in {
   programs.waybar = {
     enable = true;
     
-    # Твой config.txt, переведенный в родной Nix-синтаксис JSON
     settings = {
       mainBar = {
         layer = "top";

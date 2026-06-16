@@ -22,36 +22,53 @@ let
   fuzzel-wifi = pkgs.writeScriptBin "fuzzel-wifi.sh" ''
     #!${pkgs.runtimeShell}
     
-    # Получаем список сетей с разделителем ':' чтобы не ломать имена с пробелами
-    wifi_list=''$( ${pkgs.networkmanager}/bin/nmcli --terse --fields IN-USE,SSID,SECURITY device wifi list | grep -v "^*:" | sed 's/^://' )
+    # Сначала вытягиваем отдельно активную сеть, если она есть
+    active_ssid=''$( ${pkgs.networkmanager}/bin/nmcli --terse --fields IN-USE,SSID device wifi list | grep "^*:" | cut -d':' -f2 )
     
-    # Выводим красивый список в fuzzel (меняем двоеточия на пробелы для человеческого вида)
-    selected_node=''$(echo "''$wifi_list" | sed 's/:/  │  /g' | ${pkgs.fuzzel}/bin/fuzzel --dmenu -i -p "󰖩 Сети:")
+    # Получаем список остальных сетей (исключая активную, чтобы не дублировать)
+    raw_list=''$( ${pkgs.networkmanager}/bin/nmcli --terse --fields SSID,SECURITY device wifi list | grep -v "^BSSID" )
+    
+    # Формируем финальный список для меню
+    formatted_list=""
+    if [ ! -z "''$active_ssid" ]; then
+        formatted_list="󰖩  ''$active_ssid   [CONNECTED]""\n"
+    fi
+    
+    # Добавляем остальные сети, убирая дубликаты и пустые строки
+    other_networks=''$(echo "''$raw_list" | grep -v "^:" | grep -w -v "''$active_ssid" | sed 's/:/  │  /g' | sort -u)
+    formatted_list="''${formatted_list}''${other_networks}"
+    
+    # Вызываем fuzzel
+    selected_node=''$(echo -e "''$formatted_list" | ${pkgs.fuzzel}/bin/fuzzel --dmenu -i -p "󰖩 Сети:")
     
     if [ -z "''$selected_node" ]; then
         exit 0
     fi
 
-    # Вытаскиваем чистый SSID (все до первого разделителя '  │  ')
+    # Если кликнули на уже подключенную сеть — ничего не делаем
+    if [[ "''$selected_node" == *"[CONNECTED]"* ]]; then
+        ${pkgs.libnotify}/bin/notify-send "Wi-Fi" "Вы уже подключены к этой сети"
+        exit 0
+    fi
+
+    # Вытаскиваем чистый SSID для подключения
     ssid=''$(echo "''$selected_node" | awk -F '  │  ' '{print ''$1}' | sed 's/[[:space:]]*$//')
 
-    # Проверяем, есть ли уже сохраненное соединение
+    # Проверяем сохраненные профили
     is_saved=''$( ${pkgs.networkmanager}/bin/nmcli connection show | grep -w "''$ssid" )
 
     if [ ! -z "''$is_saved" ]; then
-        ${pkgs.libnotify}/bin/notify-send "Wi-Fi" "Подключение к сохраненной сети ''$ssid..."
+        ${pkgs.libnotify}/bin/notify-send "Wi-Fi" "Подключение к ''$ssid..."
         ${pkgs.networkmanager}/bin/nmcli connection up id "''$ssid"
     else
-        # Проверяем, защищена ли сеть (ищем упоминание WPA или WEP в исходной строке из wifi_list)
-        raw_info=''$(echo "''$wifi_list" | grep "''$ssid")
-        if [[ "''$raw_info" == *"WPA"* || "''$raw_info" == *"WEP"* ]]; then
+        # Запрос пароля для защищенных сетей
+        if [[ "''$selected_node" == *"WPA"* || "''$selected_node" == *"WEP"* ]]; then
             pass=''$( ${pkgs.fuzzel}/bin/fuzzel --dmenu --password -p "Пароль для ''$ssid:" )
             if [ ! -z "''$pass" ]; then
                 ${pkgs.libnotify}/bin/notify-send "Wi-Fi" "Подключение к новой сети ''$ssid..."
                 ${pkgs.networkmanager}/bin/nmcli device wifi connect "''$ssid" password "''$pass"
             fi
         else
-            ${pkgs.libnotify}/bin/notify-send "Wi-Fi" "Подключение к открытой сети ''$ssid..."
             ${pkgs.networkmanager}/bin/nmcli device wifi connect "''$ssid"
         fi
     fi

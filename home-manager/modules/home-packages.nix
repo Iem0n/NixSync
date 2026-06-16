@@ -11,7 +11,7 @@
     libnotify
     spotify
     zenity
-    atlauncher
     xwayland
+    tlcr
   ];
 }

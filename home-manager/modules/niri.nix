@@ -44,6 +44,7 @@
 
     spawn-sh-at-startup "waybar"
     spawn-sh-at-startup "mako"
+    spawn-at-startup "xwayland" "-nocursor"
 
     hotkey-overlay { skip-at-startup; }
 

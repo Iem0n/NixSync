@@ -11,6 +11,7 @@
     libnotify
     spotify
     zenity
-    (atlauncher.override { jre = openjdk17; })
+    atlauncher
+    xwayland
   ];
 }

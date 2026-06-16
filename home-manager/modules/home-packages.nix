@@ -11,6 +11,6 @@
     libnotify
     spotify
     zenity
-    tlauncher-legacy
+    prismlauncher
   ];
 }

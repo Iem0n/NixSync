@@ -142,11 +142,8 @@ in {
           format = "{icon}";
           format-muted = "";
           format-icons = [ "" "" "" ];
-          on-click = "${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
-          on-scroll-down = "${pkgs.wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SINK@ 1%-";
-          on-scroll-up = "${pkgs.wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SINK@ 1%+";
-          # Динамически подставляем путь к скрипту аудио-меню
-          on-click-right = "${fuzzel-audio}/bin/fuzzel-audio.sh";
+          tooltip-format = "󰕾 Volume: {volume}%";
+          on-click = "${fuzzel-audio}/bin/fuzzel-audio.sh";
         };
 
         "group/session" = {

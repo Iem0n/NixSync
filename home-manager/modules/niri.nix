@@ -44,7 +44,8 @@
 
     spawn-sh-at-startup "waybar"
     spawn-sh-at-startup "mako"
-    spawn-at-startup "Xwayland :1 -ac"
+
+    spawn-at-startup "${pkgs.xwayland}/bin/Xwayland :1 -nocursor -ac"
     
     hotkey-overlay { skip-at-startup; }
 

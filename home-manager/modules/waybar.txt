@@ -4,7 +4,7 @@ let
   # Декларативно оборачиваем твои bash-скрипты. 
   # Nix сам добавит их в Store, сделает исполняемыми (chmod +x) и даст к ним путь.
   fuzzel-audio = pkgs.writeScriptBin "fuzzel-audio.sh" ''
-    #!/usr/bin/env bash
+    #!/bin/bash
     devices=$(${pkgs.wireplumber}/bin/wpctl status | awk '/Sinks:/ {flag=1; next} /Sources:/ {flag=0} flag' | grep -E '[0-9]+\.' | sed 's/^[[:space:]]*//')
     if [ -z "$devices" ]; then
         ${pkgs.libnotify}/bin/notify-send "Ошибка" "Аудиоустройства не найдены"
@@ -20,7 +20,7 @@ let
   '';
 
   fuzzel-wifi = pkgs.writeScriptBin "fuzzel-wifi.sh" ''
-    #!usr/bin/env bash
+    #!/bin/bash
     wifi_list=$(${pkgs.networkmanager}/bin/nmcli --fields IN-USE,SSID,SECURITY device wifi list | sed 's/^IN-USE\s*//' | grep -v "SSID")
     selected_node=$(echo "$wifi_list" | ${pkgs.fuzzel}/bin/fuzzel --dmenu -i -p "󰖩 Сети:")
     if [ -z "$selected_node" ]; then

@@ -12,6 +12,6 @@
     spotify
     zenity
     xwayland
-    tlcr
+    mclc
   ];
 }

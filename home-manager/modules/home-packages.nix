@@ -11,6 +11,6 @@
     libnotify
     spotify
     zenity
-    prismlaunher
+    prismlauncher
   ];
 }

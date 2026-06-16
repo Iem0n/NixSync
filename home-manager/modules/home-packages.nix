@@ -11,7 +11,7 @@
     libnotify
     spotify
     zenity
-    xwayland
+    xwayland-satellite
     prismlauncher
   ];
 }

@@ -11,6 +11,6 @@
     libnotify
     spotify
     zenity
-    modrinth-app
+    legacy-launcher
   ];
 }

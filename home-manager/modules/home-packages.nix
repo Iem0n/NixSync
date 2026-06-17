@@ -13,7 +13,6 @@
     zenity
     xwayland-satellite
     atlauncher
-    arp
     nmap
   ];
 }

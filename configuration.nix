@@ -37,7 +37,7 @@
   # user cofiguration
   users.users.vova = {
     isNormalUser = true;
-    extraGroups = [ "wheel" "networkmanager" ]; 
+    extraGroups = [ "wheel" "networkmanager" "docker" ]; 
     packages = with pkgs; [
       tree
     ];
@@ -48,7 +48,6 @@
   programs.dconf.enable = true;
 
   virtualisation.docker.enable = true;
-  users.users.vova.extraGroups = [ "docker" ];
   
   # Packages
   environment.systemPackages = with pkgs; [

@@ -47,6 +47,9 @@
   programs.firefox.enable = true;
   programs.dconf.enable = true;
 
+  virtualisation.docker.enable = true;
+  users.users.vova.extraGroups = [ "docker" ];
+  
   # Packages
   environment.systemPackages = with pkgs; [
     git

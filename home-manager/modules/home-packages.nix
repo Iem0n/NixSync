@@ -14,5 +14,6 @@
     xwayland-satellite
     atlauncher
     nmap
+    docker
   ];
 }

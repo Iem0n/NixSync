@@ -43,6 +43,13 @@
     ];
   };
 
+  networking.localCommands = ''
+  # Отключаем STP, чтобы мост не блокировал трафик при пересчете маршрутов
+  ${pkgs.bridge-utils}/bin/brctl stp virbr0 off || true
+  # Выставляем задержку пересылки в ноль
+  ${pkgs.bridge-utils}/bin/brctl setfd virbr0 0 || true
+'';
+  
   programs.niri.enable = true;
   programs.firefox.enable = true;
   programs.dconf.enable = true;

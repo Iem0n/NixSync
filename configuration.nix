@@ -47,6 +47,13 @@
   programs.firefox.enable = true;
   programs.dconf.enable = true;
 
+  # Включаем виртуализацию
+  virtualisation.libvirtd.enable = true;
+  programs.virt-manager.enable = true;
+
+  # Добавляем твоего пользователя в нужные группы (чтобы запускать без sudo)
+  users.users.vova.extraGroups = [ "libvirtd" "kvm" ];
+
   virtualisation.docker.enable = true;
   
   # Packages
